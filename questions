@@ -1,0 +1,425 @@
+Create a directory /secure with permissions 750, owned by user root and group admins.
+[sagar@server ~]$ sudo groupadd admins
+[sudo] password for sagar:
+groupadd: group 'admins' already exists
+[sagar@server ~]$ sudo mkdir -pv /secure
+[sagar@server ~]$ sudo chmod 750 /secure
+[sagar@server ~]$ sudo chown root:admins /secure
+**************************************************************************************************
+
+Find all files in /var larger than 50MB and save the list to /root/bigfiles.txt.
+
+**************************************************************************************************
+
+Extract the tar archive /tmp/etc-backup.tar.gz to /restore.
+
+[sagar@server ~]$ sudo tar -czf etc-backup.tar.gz  /etc/
+tar: Removing leading `/' from member names
+[sagar@server ~]$ ls
+bin  Desktop  Documents  Downloads  etc-backup.tar.gz  Music  Pictures  Public  templatemo_602_graph_page  Templates  Videos
+[sagar@server ~]$ du -sh etc-backup.tar.gz
+6.7M    etc-backup.tar.gz
+[sagar@server ~]$ sudo  tar -xzf etc-backup.tar.gz /restore
+tar: /restore: Not found in archive
+tar: Exiting with failure status due to previous errors
+[sagar@server ~]$ sudo mkdir -p /restore
+[sagar@server ~]$ sudo  tar -xzf etc-backup.tar.gz /restore
+tar: /restore: Not found in archive
+tar: Exiting with failure status due to previous errors
+[sagar@server ~]$ man tar
+[sagar@server ~]$ sudo  tar -xzf etc-backup.tar.gz -C /restore
+[sagar@server ~]$ ls /restore/
+etc
+*******************************************************************
+
+Create a compressed tar archive of /usr/share/doc named /root/doc.tar.gz.
+
+[sagar@server ~]$ sudo tar -czf /root/doc.tar.gz /usr/share/doc/
+tar: Removing leading `/' from member names
+[sagar@server ~]$ ls /root
+ls: cannot open directory '/root': Permission denied
+[sagar@server ~]$ sudo ls /root
+anaconda-ks.cfg  bigfiles.txt  doc.tar.gz
+[sagar@server ~]$ sudo du -sh /root/doc.tar.gz
+18M     /root/doc.tar.gz
+****************************************************************************
+
+Use grep to find all lines in /var/log/messages that contain the string “error” (case-insensitive).
+
+[sagar@server ~]$ sudo grep -in "error" /var/log/messages
+2154:Dec  8 18:27:31 server alsactl[957]: alsa-lib main.c:1554:(snd_use_case_mgr_open) error: failed to import hw:0 use case configuration -2
+10430:Dec  9 18:36:47 server alsactl[955]: alsa-lib main.c:1554:(snd_use_case_mgr_open) error: failed to import hw:0 use case configuration -2
+**********************************************************************************
+
+Create a symbolic link /usr/local/scripts pointing to /opt/scripts.
+
+sudo ln -sf /opt/scripts /usr/local/scripts
+****************************
+
+Set the default ACL on /data/team so that group devops always has rw access.
+
+[sagar@server opt]$ sudo setfacl -d -m g:devops:rw /data/team
+[sagar@server opt]$ getfacl /data/team/
+getfacl: Removing leading '/' from absolute path names
+# file: data/team/
+# owner: root
+# group: root
+user::rwx
+group::r-x
+other::r-x
+default:user::rwx
+default:group::r-x
+default:group:devops:rw-
+default:mask::rwx
+default:other::r-x
+********************************************************
+
+Create a user sam with default shell /bin/bash and expiry date 2026-01-01.
+
+[sagar@server ~]$ sudo useradd sam
+[sagar@server ~]$ man usermod
+[sagar@server ~]$ man usermod
+[sagar@server ~]$ sudo usermod -e 2026-01-01 sam
+[sagar@server ~]$ sudo usermod --help
+Usage: usermod [options] LOGIN
+
+Options:
+  -b, --badname                 allow bad names
+  -c, --comment COMMENT         new value of the GECOS field
+  -d, --home HOME_DIR           new home directory for the user account
+  -e, --expiredate EXPIRE_DATE  set account expiration date to EXPIRE_DATE
+  -f, --inactive INACTIVE       set password inactive after expiration
+                                to INACTIVE
+  -g, --gid GROUP               force use GROUP as new primary group
+  -G, --groups GROUPS           new list of supplementary GROUPS
+  -a, --append                  append the user to the supplemental GROUPS
+                                mentioned by the -G option without removing
+                                the user from other groups
+  -h, --help                    display this help message and exit
+  -l, --login NEW_LOGIN         new value of the login name
+  -L, --lock                    lock the user account
+  -m, --move-home               move contents of the home directory to the
+                                new location (use only with -d)
+  -o, --non-unique              allow using duplicate (non-unique) UID
+  -p, --password PASSWORD       use encrypted password for the new password
+  -R, --root CHROOT_DIR         directory to chroot into
+  -P, --prefix PREFIX_DIR       prefix directory where are located the /etc/* files
+  -s, --shell SHELL             new login shell for the user account
+  -u, --uid UID                 new UID for the user account
+  -U, --unlock                  unlock the user account
+  -v, --add-subuids FIRST-LAST  add range of subordinate uids
+  -V, --del-subuids FIRST-LAST  remove range of subordinate uids
+  -w, --add-subgids FIRST-LAST  add range of subordinate gids
+  -W, --del-subgids FIRST-LAST  remove range of subordinate gids
+  -Z, --selinux-user SEUSER     new SELinux user mapping for the user account
+
+[sagar@server ~]$ sudo usermod -s /bin/bash sam
+usermod: no changes
+***************************************************************************************
+
+Create a group research and add users sam and alex to it.
+
+[sagar@server ~]$ sudo useradd alex
+[sagar@server ~]$ sudo groupadd research
+[sagar@server ~]$ sudo usermod -aG sam research
+usermod: user 'research' does not exist
+[sagar@server ~]$ sudo usermod -aG research sam
+[sagar@server ~]$ sudo usermod -aG research alex
+[sagar@server ~]$ cat /etc/group |grep sam
+sam:x:1007:
+research:x:1009:sam,alex
+[sagar@server ~]$
+*************************************************
+
+Lock the password of user alex without disabling the account.
+
+
+[sagar@server ~]$ sudo usermod -L alex
+[sagar@server ~]$ sudo cat /etc/shadow |grep alex
+alex:!$6$rounds=100000$KJTgZLUX8BYrc/vQ$87zCnJdoTbjnevXp.az16JM5zYUfSjuL9XPhiO3AOiBPTlNFr8otmqa01IDgYfbj8giXLeW/.MGwL6uCQ0RJu0:20435:0:99999:7:::
+[sagar@server ~]$
+***********************************************************************************
+
+Set file /srv/report.txt so only user sam can read/write and all others have no permissions.
+:::::::::::::::::maybe mistake:::::::::::::::
+[sagar@server ~]$ sudo chown sam:sam /srv/report.txt 
+[sagar@server ~]$ sudo chmod 600 /srv/report.txt
+[sagar@server ~]$ sudo ls -l /srv/report.txt
+-rw-------. 1 sam sam 0 Dec 13 18:52 /srv/report.txt
+[sagar@server ~]$
+***************************************************************************************
+
+Configure user harry to run /usr/bin/systemctl restart httpd via sudo without a password.
+
+Cmnd_Alias ABC = /usr/bin/systemctl restart https
+harry ALL=(ALL) NOPASSWD: ABC
+
+[sagar@server ~]$ su harry
+Password:
+[harry@server sagar]$ sudo systemctl restart httpd
+[harry@server sagar]$ exit
+exit
+[sagar@server ~]$ sudo systemctl status httpd |grep Active
+     Active: active (running) since Sat 2025-12-13 20:38:47 +0545; 47s ago
+
+
+******************************************
+Create a private group for user martin.
+sudo groupadd private
+  526  sudo useradd martin
+  527  sudo usermod -g private martin
+
+**************************************
+Set a password policy so that passwords expire every 45 days and warn users 7 days before.
+[sagar@server ~]$ sudo chage -M 45 -W 7 sam
+[sagar@server ~]$ sudo cat /etc/shadow |grep sam
+sam:$6$6LtL7dL/j.EMDVzh$DsaqCG4sN8wqYC13ohRrZ0aG6xFKgaBqf2ZxhE51rnfXk2rd7aM2JY0Vo1Goh9Kt86CON/kEMtWqi6TPRcibI.:20435:0:45:7::20454:
+***********************************************
+
+Configure an IPv4 static address on ens124 with:
+IP: 192.168.10.50/24
+Gateway: 192.168.10.1
+DNS: 8.8.8.8
+
+[root@server ~]# nmcli connection modify ens160 ipv4.method manual
+[root@server ~]# nmcli connection modify ens160 ipv4.addresses 192.168.89.10/24 ipv4.gateway 192.168.89.2 ipv4.dns 8.8.8.8
+*********************************************************************
+
+Test network connection to host server.example.com and save output to /root/ping.txt.
+
+
+Permanently allow HTTPS service in the firewall and reload firewalld.
+
+[root@server ~]# firewall-cmd --add-service=https --permanent
+success
+[root@server ~]# systemctl restart firewalld.service
+[root@server ~]# firewall-cmd  --list-services
+cockpit dhcpv6-client https ssh
+*************************************************************************************************
+
+Create a persistent hostname server1.example.com.
+
+hostnamectl set-hostname server1.example.com 
+*********************************************************
+
+Configure system time using NTP server time.example.com.
+
+
+
+Check which process is using port 8080.
+
+[root@server ~]# ss -tlpn |grep 6010
+LISTEN 0      128        127.0.0.1:6010       0.0.0.0:*    users:(("sshd",pid=2090,fd=9))
+LISTEN 0      128            [::1]:6010          [::]:*    users:(("sshd",pid=2090,fd=8))
+****************************************************
+
+
+
+Add a rich rule to allow SSH only from IP 10.1.1.5.
+[root@server ~]# firewall-cmd --add-rich-rule='rule family="ipv4" source address="192.168.89.2" service name="ssh" accept' --permanent
+success
+[root@server ~]# firewall-cmd --reload
+success
+[root@server ~]# firewall-cmd --list-rich-rules
+rule family="ipv4" source address="192.168.89.2" service name="ssh" accept
+[root@server ~]# firewall-cmd --remove-rich-rule='rule family="ipv4" source address="192.168.89.2" service name="ssh" accept' --permanent
+success
+[root@server ~]# firewall-cmd --reload
+success
+[root@server ~]# firewall-cmd --list-rich-rules
+
+[root@server ~]#
+**************************************************
+
+
+Create a systemd service:
+Name: /etc/systemd/system/monitor.service
+Runs /opt/monitor.sh
+Runs at boot
+Disable and stop the bluetooth service.
+
+[root@server ~]# cp /usr/lib/systemd/system/httpd.service /etc/systemd/system/monitor.service
+[root@server ~]# vim /etc/systemd/system/monitor.service
+[root@server ~]# cat /etc/systemd/system/monitor.service
+
+[Unit]
+Description=The disabler of bluetooth
+
+[Service]
+ExecStart=/opt/monitor.sh
+
+[Install]
+WantedBy=multi-user.target
+[root@server ~]# systemctl daemon-reload
+[root@server ~]# systemctl list-unit-files |grep monitor.service
+low-memory-monitor.service                 enabled         enabled
+lvm2-monitor.service                       enabled         enabled
+mdmonitor.service                          enabled         enabled
+monitor.service                            disabled        disabled
+[root@server ~]# systemctl enable monitor.service
+Created symlink /etc/systemd/system/multi-user.target.wants/monitor.service → /etc/systemd/system/monitor.service.
+[root@server ~]# systemctl list-unit-files |grep monitor.service
+low-memory-monitor.service                 enabled         enabled
+lvm2-monitor.service                       enabled         enabled
+mdmonitor.service                          enabled         enabled
+monitor.service                            enabled         disabled
+[root@server ~]# systemctl start monitor.service
+[root@server ~]# systemctl status monitor.service
+○ monitor.service - The disabler of bluetooth
+     Loaded: loaded (/etc/systemd/system/monitor.service; enabled; preset: disabled)
+     Active: inactive (dead) since Sun 2025-12-14 19:10:31 +0545; 9s ago
+   Duration: 867ms
+    Process: 4187 ExecStart=/opt/monitor.sh (code=exited, status=0/SUCCESS)
+   Main PID: 4187 (code=exited, status=0/SUCCESS)
+        CPU: 47ms
+
+Dec 14 19:10:30 server systemd[1]: Started The disabler of bluetooth.
+Dec 14 19:10:30 server sudo[4188]:     root : PWD=/ ; USER=root ; COMMAND=/bin/systemctl stop bluetooth.service
+Dec 14 19:10:30 server sudo[4188]: pam_unix(sudo:session): session opened for user root(uid=0) by (uid=0)
+Dec 14 19:10:30 server sudo[4188]: pam_unix(sudo:session): session closed for user root
+Dec 14 19:10:30 server sudo[4209]:     root : PWD=/ ; USER=root ; COMMAND=/bin/systemctl disable bluetooth.service
+Dec 14 19:10:30 server sudo[4209]: pam_unix(sudo:session): session opened for user root(uid=0) by (uid=0)
+Dec 14 19:10:31 server sudo[4209]: pam_unix(sudo:session): session closed for user root
+Dec 14 19:10:31 server systemd[1]: monitor.service: Deactivated successfully.
+************************************************************************************************************
+
+
+
+Check what service failed most recently and why.
+
+[root@server ~]# systemctl --failed
+  UNIT          LOAD   ACTIVE SUB    DESCRIPTION
+● nginx.service loaded failed failed The nginx HTTP and reverse proxy server
+
+LOAD   = Reflects whether the unit definition was properly loaded.
+ACTIVE = The high-level unit activation state, i.e. generalization of SUB.
+SUB    = The low-level unit activation state, values depend on unit type.
+1 loaded units listed.
+[root@server ~]# systemctl status nginx.service
+× nginx.service - The nginx HTTP and reverse proxy server
+     Loaded: loaded (/usr/lib/systemd/system/nginx.service; disabled; preset: disabled)
+     Active: failed (Result: exit-code) since Sun 2025-12-14 19:00:50 +0545; 13min ago
+        CPU: 39ms
+
+Dec 14 19:00:49 server nginx[3762]: nginx: [emerg] bind() to 0.0.0.0:80 failed (98: Address already in use)
+Dec 14 19:00:49 server nginx[3762]: nginx: [emerg] bind() to [::]:80 failed (98: Address already in use)
+Dec 14 19:00:49 server nginx[3762]: nginx: [emerg] bind() to 0.0.0.0:80 failed (98: Address already in use)
+Dec 14 19:00:49 server nginx[3762]: nginx: [emerg] bind() to [::]:80 failed (98: Address already in use)
+Dec 14 19:00:50 server nginx[3762]: nginx: [emerg] bind() to 0.0.0.0:80 failed (98: Address already in use)
+Dec 14 19:00:50 server nginx[3762]: nginx: [emerg] bind() to [::]:80 failed (98: Address already in use)
+Dec 14 19:00:50 server nginx[3762]: nginx: [emerg] still could not bind()
+Dec 14 19:00:50 server systemd[1]: nginx.service: Control process exited, code=exited, status=1/FAILURE
+Dec 14 19:00:50 server systemd[1]: nginx.service: Failed with result 'exit-code'.
+Dec 14 19:00:50 server systemd[1]: Failed to start The nginx HTTP and reverse proxy server.
+
+
+[root@server ~]# journalctl  -u nginx.service
+Dec 14 19:00:48 server systemd[1]: Starting The nginx HTTP and reverse proxy server...
+Dec 14 19:00:48 server nginx[3761]: nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+Dec 14 19:00:48 server nginx[3761]: nginx: configuration file /etc/nginx/nginx.conf test is successful
+Dec 14 19:00:48 server nginx[3762]: nginx: [emerg] bind() to 0.0.0.0:80 failed (98: Address already in use)
+Dec 14 19:00:48 server nginx[3762]: nginx: [emerg] bind() to [::]:80 failed (98: Address already in use)
+Dec 14 19:00:48 server nginx[3762]: nginx: [emerg] bind() to 0.0.0.0:80 failed (98: Address already in use)
+Dec 14 19:00:48 server nginx[3762]: nginx: [emerg] bind() to [::]:80 failed (98: Address already in use)
+Dec 14 19:00:49 server nginx[3762]: nginx: [emerg] bind() to 0.0.0.0:80 failed (98: Address already in use)
+Dec 14 19:00:49 server nginx[3762]: nginx: [emerg] bind() to [::]:80 failed (98: Address already in use)
+Dec 14 19:00:49 server nginx[3762]: nginx: [emerg] bind() to 0.0.0.0:80 failed (98: Address already in use)
+Dec 14 19:00:49 server nginx[3762]: nginx: [emerg] bind() to [::]:80 failed (98: Address already in use)
+Dec 14 19:00:50 server nginx[3762]: nginx: [emerg] bind() to 0.0.0.0:80 failed (98: Address already in use)
+Dec 14 19:00:50 server nginx[3762]: nginx: [emerg] bind() to [::]:80 failed (98: Address already in use)
+Dec 14 19:00:50 server nginx[3762]: nginx: [emerg] still could not bind()
+Dec 14 19:00:50 server systemd[1]: nginx.service: Control process exited, code=exited, status=1/FAILURE
+Dec 14 19:00:50 server systemd[1]: nginx.service: Failed with result 'exit-code'.
+Dec 14 19:00:50 server systemd[1]: Failed to start The nginx HTTP and reverse proxy server.
+**************************************************************************************************************
+
+
+
+
+
+
+Run a container named web1 using the image nginx and expose port 8080:80.
+Make the container persistent across reboots using a systemd unit.
+Create a pod named devpod with HTTP and HTTPS ports opened.
+Build a container image from a Containerfile in /root/myapp.
+View logs of container web1.
+Mount a host directory /srv/html into the nginx container as /usr/share/nginx/html.
+Remove all unused container images and stopped containers.
+
+
+Write a script that prints the number of files in /var/log and saves the output to /root/logcount.txt.
+Create a script that checks if a user exists. If not, it creates the user and prints a message.
+Write a script that accepts a filename as an argument and displays whether it is a directory, a regular file, or something else.
+Create a script that prints the top 10 memory-consuming processes.
+Write a script that loops through every file in /etc and prints only the ones owned by root.
+Create a script that monitors free disk space and sends a warning to /var/log/diskwarn.log when usage goes above 80%.
+Write a script that renames all .log files in /var/log by appending today’s date.
+
+
+
+
+Your system administrator has created a script called /usr/local/bin/backup.sh that performs a backup of user data. ( backup.sh should be able to backup log files from /var/log)
+You need to ensure the system runs this backup automatically.
+
+Tasks:
+Make sure the script is executable by appropriate users.
+Schedule a cron job for the current user that runs this script every day at 3:45 AM.
+Prevent cron from sending email output by redirecting it to /dev/null.
+Verify the cron entry is installed correctly.
+
+
+disk space monitoring 
+Set up a cron job (for the current user) that runs every 15 minutes.
+The job must execute:
+Append the output to /var/log/disk_usage.log with a timestamp.
+Ensure the log file grows continuously (no overwrite).
+
+The /tmp directory is filling up too quickly.
+Create a system-wide cron job (use /etc/crontab or /etc/cron.d) that runs every day at 2:00 AM.
+The job must delete files in /tmp/oldfiles/ that are older than 7 days.
+Use appropriate commands (e.g., find).
+Ensure the job runs as the root user.
+
+
+
+A new virtual disk /dev/sdb has been attached to your system.
+Create a 2 GB primary partition on /dev/sdb using fdisk or parted.
+Format the partition as ext4.
+Create a mount point /data.
+Permanently mount the new filesystem using /etc/fstab.
+
+
+The system needs additional swap space.
+On device /dev/sdc, create a 1.5 GB partition.
+Set the correct partition type for swap.
+Format it as swap and activate it immediately.
+Add an entry in /etc/fstab so the swap persists across reboots.
+Verify swap space is active.
+
+Your application needs flexible storage management.
+Use /dev/sdd to create a 4 GB partition.
+Convert the partition into a physical volume (PV).
+Create a volume group (VG) named vgapps.
+Within that VG, create a 2 GB logical volume (LV) named lvdata.
+Format the logical volume using xfs.
+Mount the logical volume at /appdata.
+Add a persistent entry to /etc/fstab.
+
+Your company needs to share a project directory with several developers over the network. You must configure the local machine as an NFS server.
+Install and enable all required NFS services.
+Create a directory /srv/projectshare.
+Set permissions so that all client users have read/write access.
+Export the directory /srv/projectshare to the subnet 192.168.50.0/24 with the following rules:
+Read/write access
+Synchronous writes
+No root squash
+Ensure the export is permanently available after reboot.
+Verify the export with the appropriate command.
+
+
+You must mount this on your client machine.
+Create a mount point /mnt/datarepo.
+Mount the NFS share manually to test functionality.
+Add a persistent entry in /etc/fstab to mount this directory automatically at boot.
+Ensure the mount is accessible with proper permissions.
+If the server becomes unreachable, the client should not hang indefinitely.
