@@ -333,13 +333,59 @@ Dec 14 19:00:50 server systemd[1]: nginx.service: Failed with result 'exit-code'
 Dec 14 19:00:50 server systemd[1]: Failed to start The nginx HTTP and reverse proxy server.
 **************************************************************************************************************
 
-
-
-
-
-
 Run a container named web1 using the image nginx and expose port 8080:80.
+
+[sagar@server ~]$ podman pull nginx:alpine
+✔ docker.io/library/nginx:alpine
+Trying to pull docker.io/library/nginx:alpine...
+Getting image source signatures
+Copying blob 014e56e61396 done   |
+Copying blob dfad290a5c25 done   |
+Copying blob 5d2cc344426d done   |
+Copying blob 51c30493937c done   |
+Copying blob abdece946203 done   |
+Copying blob ad5b65da02cf done   |
+Copying blob fc13532503d7 done   |
+Copying blob 136bc6976c20 done   |
+Copying config a236f84b9d done   |
+Writing manifest to image destination
+a236f84b9d5d27fe4bf2bab07501cccdc8e16bb38a41f83e245216bbd2b61b5c
+[sagar@server ~]$ podman image list
+REPOSITORY               TAG         IMAGE ID      CREATED     SIZE
+docker.io/library/nginx  alpine      a236f84b9d5d  6 days ago  55.2 MB
+[sagar@server ~]$ podman run -d -p 8080:80 --name webservertest nginx:alpine
+b7141cca2d833c1bfe421c34b351d7723a94e1d118543aaf15783452aee63ba7
+[sagar@server ~]$ podman ps
+CONTAINER ID  IMAGE                           COMMAND               CREATED        STATUS        PORTS                 NAMES
+b7141cca2d83  docker.io/library/nginx:alpine  nginx -g daemon o...  5 minutes ago  Up 5 minutes  0.0.0.0:8080->80/tcp  webservertest
+
+
+[sagar@server ~]$ sudo firewall-cmd --add-port=8080/tcp --permanent
+success
+
+*****************************************************************************************************************
+
 Make the container persistent across reboots using a systemd unit.
+
+podman generate systemd --name webservertest --files --new
+mkdir -p ~/.config/systemd/user
+mv container-webservertest.service ~/.config/systemd/user/
+  592  systemctl daemon-reload
+systemctl --user enable container-webservertest.service
+[sagar@server default.target.wants]$ systemctl --user start container-webservertest.service
+[sagar@server default.target.wants]$ systemctl --user status container-webservertest.service
+
+
+FOR ROOT
+sudo podman run -d --name webservertest -p 8080:80 nginx:alpine
+sudo podman generate systemd --name webservertest --files --new
+sudo mv container-webservertest.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now container-webservertest
+*********************************++++++++++++++++++++++++++++++++++++++++++++++++++================
+
+
+
 Create a pod named devpod with HTTP and HTTPS ports opened.
 Build a container image from a Containerfile in /root/myapp.
 View logs of container web1.
