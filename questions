@@ -385,15 +385,53 @@ sudo systemctl enable --now container-webservertest
 *********************************++++++++++++++++++++++++++++++++++++++++++++++++++================
 
 
-
 Create a pod named devpod with HTTP and HTTPS ports opened.
+
+[root@server ~]# podman pod create --name devpod -p 80:80 -p 443:443
+0904e956c1007c5216738fb29e13a8f8b842b59966126d3fdb4ed7a60459f78f
+[root@server ~]# podman run -d --pod devpod --name newpod nginx:alpine
+403fbc18ef994af114552d157ccdcc4eae6067df745f918cc9a50fb8a71b34bb
+[root@server ~]#
+
+***************************************************
+
+
+
 Build a container image from a Containerfile in /root/myapp.
 View logs of container web1.
-Mount a host directory /srv/html into the nginx container as /usr/share/nginx/html.
-Remove all unused container images and stopped containers.
 
+podman pod logs -f devpod
+**********************************************************************************************************************
+
+
+Mount a host directory /srv/html into the nginx container as /usr/share/nginx/html.
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+[sagar@server ~]$ podman rm -f test
+test
+[sagar@server ~]$ podman run -d --name test  -v /srv/html/:/usr/share/nginx/html -p 8081:80 nginx:alpine
+28e005b09a6f3a0764adbab4181f464a626a86742ab8ad991d03eb2eb94820ef
+[sagar@server ~]$ podman exec -it test /bin/sh
+/ # cd /usr/share/nginx/html/
+/usr/share/nginx/html # ls
+ls: can't open '.': Permission denied
+/usr/share/nginx/html # exit
+[sagar@server ~]$ podman rm -f test
+test
+[sagar@server ~]$
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx
+
+
+Remove all unused container images and stopped containers.
+ for removing all running and stopped **podman rm -f --all
+for removing all stopped ones podman container prune -f
+*******************************************************************************************************************
 
 Write a script that prints the number of files in /var/log and saves the output to /root/logcount.txt.
+
+
+
+
 Create a script that checks if a user exists. If not, it creates the user and prints a message.
 Write a script that accepts a filename as an argument and displays whether it is a directory, a regular file, or something else.
 Create a script that prints the top 10 memory-consuming processes.
