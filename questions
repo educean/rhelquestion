@@ -428,14 +428,100 @@ for removing all stopped ones podman container prune -f
 *******************************************************************************************************************
 
 Write a script that prints the number of files in /var/log and saves the output to /root/logcount.txt.
+qn1.sh
+[root@server ~]# cat 1qn.sh
+
+#!/bin/bash
+echo "$(ls -1 /var/log | wc -l)" > /root/logcount.txt
+
+[root@server ~]# sh 1qn.sh
+[root@server ~]# cat /root/logcount.txt
+80
+
+*******************************************************************************************************
+Create a script that checks if a user exists. If not, it creates the user and prints a message. 
+[root@server ~]# cat 2qn.sh
+#!/bin/bash
+echo "enter a username"
+read usercheck
+
+id $usercheck &>/dev/null
+
+if [ $? == "0" ]; then
+        echo "user already exitsts"
+else
+        useradd $usercheck
+        echo "user $usercheck has been created successfully"
+fi
+
+[root@server ~]# sh 2qn.sh
+enter a username
+abcd
+user abcd has been created successfully
+***********************************************************************************************************************************
 
 
-
-
-Create a script that checks if a user exists. If not, it creates the user and prints a message.
 Write a script that accepts a filename as an argument and displays whether it is a directory, a regular file, or something else.
+
+#!/bin/bash
+
+echo "write to check if it isa file or folder "
+
+read filefolder
+
+if [ -d "$filefolder" ]; then
+        echo "$filefolder is a folder"
+elif [ -f "$filefolder" ]; then
+        echo "$filefolder is a file"
+else
+        echo "$filefolder is something else"
+fi
+
+[root@server ~]# sh 3qn.sh
+write to check if it isa file or folder
+1qn.sh
+1qn.sh is a file
+[root@server ~]# sh 3qn.sh
+write to check if it isa file or folder
+hdjs
+hdjs is something else
+************************************************************************************
+
+
+
 Create a script that prints the top 10 memory-consuming processes.
+
+ps aux --sort -%mem |head -n 11
+
+****************************************************************************************************
+
 Write a script that loops through every file in /etc and prints only the ones owned by root.
+
+
+#!/bin/bash
+
+echo "check root owned files in /etc"
+
+filelist=$(find /etc -type f)
+
+for onefile in "$filelist[@]"; do
+        owner=$(stat -c %U "$onefile")
+        if [ "$owner" = "root" ]; then
+                echo "$onefile"
+        fi
+done
+there is somemistake
+
+
+
+
+
+
+
+
+
+
+
 Create a script that monitors free disk space and sends a warning to /var/log/diskwarn.log when usage goes above 80%.
 Write a script that renames all .log files in /var/log by appending today’s date.
 
